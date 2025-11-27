@@ -1,4 +1,4 @@
-# Student Registration System Staging
+# Student Registration System Staging trigger
 
 A simple **Flask** web application to manage student records with **MongoDB** as the backend database. Users can **add, view, update, and delete** student details.
 
@@ -128,6 +128,7 @@ Form pre-filled with student details.
 MIT License
 
 ---
+
 
 
 
