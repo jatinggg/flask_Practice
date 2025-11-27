@@ -1,0 +1,76 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - staging
+  create:
+    tags:
+      - '*'
+# staging
+jobs:
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create env file
+        run: |
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+
+      - name: Zip project
+        run: zip -r app.zip . -x "*.git*"
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_EC2_KEY }}" > ~/.ssh/key.pem
+          chmod 600 ~/.ssh/key.pem
+
+      - name: Upload code
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/key.pem app.zip ubuntu@${{ secrets.STAGING_EC2_HOST }}:/home/ubuntu/app.zip
+
+      - name: Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key.pem ubuntu@${{ secrets.STAGING_EC2_HOST }} '
+            sudo unzip -o /home/ubuntu/app.zip -d /home/ubuntu/app
+            sudo systemctl restart flaskapp
+          '
+
+# prod
+  deploy-production:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create env file
+        run: |
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+
+      - name: Zip project
+        run: zip -r app.zip . -x "*.git*"
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_EC2_KEY }}" > ~/.ssh/key.pem
+          chmod 600 ~/.ssh/key.pem
+
+      - name: Upload code
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/key.pem app.zip ubuntu@${{ secrets.PROD_EC2_HOST }}:/home/ubuntu/app.zip
+
+      - name: Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key.pem ubuntu@${{ secrets.PROD_EC2_HOST }} '
+            sudo unzip -o /home/ubuntu/app.zip -d /home/ubuntu/app
+            sudo systemctl restart flaskapp
+          '
