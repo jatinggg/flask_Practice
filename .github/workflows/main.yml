@@ -40,6 +40,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/key.pem ubuntu@${{ secrets.STAGING_EC2_HOST }} '
             sudo unzip -o /home/ubuntu/app.zip -d /home/ubuntu/app
             sudo chown -R ubuntu:ubuntu /home/ubuntu/app
+            cd /home/ubuntu/app
+            python3 -m venv venv
+            ./venv/bin/pip install -r requirements.txt
             sudo systemctl restart flaskapp
           '
 
@@ -75,5 +78,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/key.pem ubuntu@${{ secrets.PROD_EC2_HOST }} '
             sudo unzip -o /home/ubuntu/app.zip -d /home/ubuntu/app
             sudo chown -R ubuntu:ubuntu /home/ubuntu/app
+            cd /home/ubuntu/app
+            python3 -m venv venv
+            ./venv/bin/pip install -r requirements.txt
             sudo systemctl restart flaskapp
           '

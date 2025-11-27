@@ -3,6 +3,7 @@ flask-pymongo==2.3.0
 python-dotenv==1.0.0
 pymongo[srv]==3.13.0
 dnspython==2.4.2
+pytest
 gunicorn
 
 
