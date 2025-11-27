@@ -1,4 +1,4 @@
-# Student Registration System Staging trigger
+# Student Registration System Staging
 
 A simple **Flask** web application to manage student records with **MongoDB** as the backend database. Users can **add, view, update, and delete** student details.
 
