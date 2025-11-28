@@ -230,6 +230,7 @@ Once staging tests pass, merge to production:
 git fetch origin
 git pull origin main
 git checkout main
+git commit -m "Deploy to prod"
 git merge origin/staging
 git tag v1.0.1
 git push origin v1.0.1
